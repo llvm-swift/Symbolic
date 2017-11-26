@@ -94,14 +94,6 @@ public class SharedObject {
     self.ownsHandle = !flags.contains(.noLoad)
   }
 
-  /// Creates a SharedObject for the provided DSO handle.
-  private init(handle: UnsafeRawPointer) {
-    let info = SymbolInfo(address: handle)!
-    self.object = info.filename!
-    self.handle = handle
-    self.ownsHandle = false
-  }
-
   /// The symbol info for this object.
   public var symbolInfo: SymbolInfo {
     return SymbolInfo(filename: object,
@@ -117,7 +109,12 @@ public class SharedObject {
   ///                        get the shared object you actually reside in.
   public static func current(
     _ dsohandle: UnsafeRawPointer = #dsohandle) -> SharedObject {
-    return SharedObject(handle: dsohandle)
+    do {
+      let info = SymbolInfo(address: dsohandle)!
+      return try SharedObject(object: info.filename!)
+    } catch {
+      fatalError("could not load current object")
+    }
   }
 
   public func function<T>(forSymbol symbol: String, ofType type: T.Type) -> T? {

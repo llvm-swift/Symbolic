@@ -16,6 +16,11 @@ func testLibrary(_ name: String) -> URL {
     .appendingPathComponent("lib\(name).\(testSharedLibraryExtension)")
 }
 
+@_cdecl("symbolic_test_hook")
+public func symbolicTestHook() -> Int32 {
+  return 1
+}
+
 class SymbolicTests: XCTestCase {
   func testCurrentLibrary() {
     let currentObj = SharedObject.current()
@@ -26,6 +31,13 @@ class SymbolicTests: XCTestCase {
     }
     XCTAssertNil(currentObj.symbolInfo.symbolName)
     XCTAssertNil(currentObj.symbolInfo.symbolAddress)
+
+    typealias TestHookFn = @convention(c) () -> Int32
+
+    let testHook1Fn = currentObj.function(forSymbol: "symbolic_test_hook",
+                                          ofType: TestHookFn.self)
+    XCTAssertNotNil(testHook1Fn)
+    XCTAssertEqual(testHook1Fn?(), 1)
   }
 
   func testLoadLibrary() {
