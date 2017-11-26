@@ -33,7 +33,7 @@ let addr = libc.address(forSymbol: "sin") // will not be `nil`
 typealias SinFn = @convention(c) (Double) -> Double
 
 // Will perform an unsafeBitCast on your behalf!
-let sinFn = libc.function(forSymbol: "sin", ofType: SinFn.self
+let sinFn = libc.function(forSymbol: "sin", ofType: SinFn.self)
 
 sinFn?(0.5) // 0.4794255386
 ```
