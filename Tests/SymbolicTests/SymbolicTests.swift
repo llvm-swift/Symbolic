@@ -18,7 +18,6 @@ func testLibrary(_ name: String) -> URL {
 
 class SymbolicTests: XCTestCase {
   func testCurrentLibrary() {
-    typealias TestHookFn = @convention(c) () -> Int
     let currentObj = SharedObject.current()
     XCTAssert(currentObj.object.path.contains("Symbolic"))
     XCTAssertNotNil(currentObj.symbolInfo.filename)
